@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import './PageProduit.dart';
+import 'package:sae_mobile/page/ChoisirCategorie.dart';
+import 'package:sae_mobile/page/choisirAnnonce.dart';
+import 'PageProduit.dart';
 import 'Accueil.dart';
 
 class MyApp extends StatelessWidget {
@@ -45,10 +47,13 @@ class _MyHomePageState extends State<MyHomePage> {
         pageSelectionnee = Accueil();
         break;
       case 1:
-        pageSelectionnee = PageProduit();
+        pageSelectionnee = ChoisirCategorie();
+        break;
+      case 2:
+        pageSelectionnee = ChoisirAnnonce();
         break;
       default:
-        pageSelectionnee = PageProduit();
+        pageSelectionnee = Accueil();
     }
     return Scaffold(
       body: pageSelectionnee,
@@ -59,8 +64,12 @@ class _MyHomePageState extends State<MyHomePage> {
             label: 'Accueil',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.shopping_cart),
-            label: 'Produits',
+            icon: Icon(Icons.category),
+            label: 'Catégories',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.production_quantity_limits),
+            label: 'Annonces',
           ),
         ],
         currentIndex: numeroNavBarSelection,
