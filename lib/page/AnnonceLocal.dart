@@ -1,8 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:sae_mobile/modele/modele_local/file/Annonce.dart';
+import 'package:sae/modele/modele_local/file/Annonce.dart';
 import '../modele/modele_local/bd/AnnonceBD.dart';
 import 'ajouterAnnonce.dart';
+import '../modele/User/UtilisateurConnexion.dart';
+import '../modele/modele_supabase/bd/AnnonceService.dart';
+import '../modele/modele_supabase/bd/CreerService.dart';
+import '../modele/modele_supabase/file/AnnonceS.dart';
+import '../modele/modele_supabase/file/Creer.dart';
+
 
 class AnnonceLocal extends StatefulWidget {
   const AnnonceLocal({Key? key}) : super(key: key);
@@ -17,7 +23,9 @@ class _AnnonceLocalState extends State<AnnonceLocal>{
   @override
   void initState() {
     super.initState();
-    _annonceLocal = AnnonceBD().getAllAnnoces();
+    int utilisateurId = UtilisateurConnecte.utilisateur!.getId;
+    _annonceLocal = AnnonceBD().getAnnoncesByUtilisateur(utilisateurId);
+
   }
 
   @override
@@ -34,8 +42,9 @@ class _AnnonceLocalState extends State<AnnonceLocal>{
               child: CircularProgressIndicator(),
             );
           } else if (snapshot.hasError) {
+            // Afficher un message d'erreur spécifique
             return Center(
-              child: Text('Erreur lors du chargement des données'),
+              child: Text('Erreur lors du chargement des données: ${snapshot.error}'),
             );
           } else {
             return Column(
@@ -51,7 +60,16 @@ class _AnnonceLocalState extends State<AnnonceLocal>{
                       itemBuilder: (context, index) {
                         final annonce = snapshot.data![index];
                         return ListTile(
-                          title: Text(annonce.titre),
+                          title: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(annonce.titre),
+                              ElevatedButton(
+                                onPressed: () => _publierAnnonce(context, annonce),
+                                child: Text('Publier'),
+                              ),
+                            ],
+                          ),
                           subtitle: Text('Description: ${annonce.description}'),
                         );
                       },
@@ -69,11 +87,25 @@ class _AnnonceLocalState extends State<AnnonceLocal>{
     );
   }
 
+
+  void _publierAnnonce(BuildContext context, Annonce annonce) async {
+    // Publier l'annonce et la supprimer de la base de données locale
+    AnnonceS annonceS = AnnonceS.fromAnnonce(annonce);
+    int newId = await AnnonceService().insererUneAnnonce(annonceS);
+    await CreerService().insererUnLien(Creer(idU: UtilisateurConnecte.utilisateur!.getId, idA: newId));
+    await AnnonceBD().deleteAnnonce(annonce.getId);
+    setState(() {
+      _annonceLocal = AnnonceBD().getAnnoncesByUtilisateur(UtilisateurConnecte.utilisateur!.getId);
+    });
+  }
+
+
   void _ajouterAnnonce(BuildContext context) {
     // Envoyer vers AjouterAnnonce
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => AjouterAnnonce()),
     );
+
   }
 }

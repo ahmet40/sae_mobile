@@ -34,4 +34,33 @@ class UtilisateurService {
     }
     return listeUtilisateurs;
   }
+
+  // Trouver l'utilisateur qui a posté une annonce à partir de l'ID de l'annonce
+  Future<Utilisateur> trouverUtilisateurParAnnonceId(int annonceId) async {
+    final response = await supabase
+        .from('CREER')
+        .select('idU')
+        .eq('idA', annonceId)
+        .single();
+
+    final userId = response['idU'] as int?;
+    if (userId == null) {
+      print('Aucun utilisateur trouvé pour l\'annonce $annonceId');
+      // Retourner un utilisateur par défaut ou fictif
+      return Utilisateur(id: 0, nom: 'Utilisateur inconnu', mail: '', motDePasse: '');
+    }
+
+    // Récupérer tous les utilisateurs sous forme d'objets Utilisateur
+    final users = await recupererTousLesUtilisateurObjet();
+
+    // Rechercher l'utilisateur correspondant à l'ID
+    final utilisateur = users.firstWhere((user) => user.id == userId, orElse: () {
+      print('Utilisateur non trouvé pour l\'ID $userId');
+      // Retourner un utilisateur par défaut ou fictif
+      return Utilisateur(id: 0, nom: 'Utilisateur inconnu', mail: '', motDePasse: '');
+    });
+
+    return utilisateur;
+  }
+
 }

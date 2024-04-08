@@ -1,8 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'connexion.dart';
 
 class Accueil extends StatelessWidget {
-  const Accueil({super.key});
+  const Accueil({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -14,7 +15,8 @@ class Accueil extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Image.asset('image/demande.png',
+            Image.asset(
+              'image/demande.png',
               width: 200,
               height: 200,
             ),
@@ -23,7 +25,16 @@ class Accueil extends StatelessWidget {
               'Bienvenue à Allo 45',
               style: TextStyle(fontSize: 20),
             ),
-            const SizedBox(height: 10)
+            const SizedBox(height: 10),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => Connexion()),
+                );
+              },
+              child: const Text('Se déconnecter'),
+            ),
           ],
         ),
       ),

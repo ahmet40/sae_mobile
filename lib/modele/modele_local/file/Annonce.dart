@@ -3,8 +3,8 @@ class Annonce{
   final String titre;
   final String description;
   final int idCategorie;
-  final String dateDebut;
-  final String dateFin;
+  final DateTime dateDebut;
+  final DateTime dateFin;
 
   Annonce({required this.id, required this.titre, required this.description, required this.idCategorie, required this.dateDebut, required this.dateFin});
 
@@ -20,7 +20,8 @@ class Annonce{
     titre: data['titre'],
     description: data['description'],
     idCategorie: data['idCategorie'],
-    dateDebut: data['dateDebut'],
-    dateFin: data['dateFin']
+    dateDebut: DateTime.parse(data['dateDebut']), // Convertit la chaîne de caractères en DateTime
+    dateFin: DateTime.parse(data['dateFin']), // Convertit la chaîne de caractères en DateTime
   );
+
 }

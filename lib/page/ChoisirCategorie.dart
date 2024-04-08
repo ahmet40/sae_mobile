@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:sae/modele/modele_supabase/bd/CategorieService.dart';
 
 import '../modele/modele_local/bd/CategorieBD.dart';
 import '../modele/modele_local/file/Categorie.dart';
 import 'PageProduit.dart';
+import '../modele/modele_supabase/bd/CategorieService.dart';
 
 class ChoisirCategorie extends StatefulWidget {
   const ChoisirCategorie({Key? key}) : super(key: key);
@@ -97,6 +99,7 @@ class _ChoisirCategorieState extends State<ChoisirCategorie> {
               onPressed: () {
                 // Appeler la fonction pour créer la catégorie avec le nom saisi
                 CategorieBD().creeCategorie(nouvelleCategorie);
+                CategorieService().insererUneCategorie(nouvelleCategorie);
                 Navigator.of(context).pop();
                 // Rafraîchir la liste des catégories après l'ajout
                 setState(() {

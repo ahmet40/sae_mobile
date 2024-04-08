@@ -4,6 +4,7 @@ import '../modele/modele_supabase/bd/utilistaeurService.dart';
 import '../modele/modele_supabase/file/Utilisateur.dart';
 import 'MyApp.dart';
 import 'inscription.dart';
+import '../modele/User/UtilisateurConnexion.dart';
 
 
 class Connexion extends StatelessWidget {
@@ -42,6 +43,7 @@ class _ConnexionState extends State<ConnexionPage> {
   void verifierUtilisateur(String nomUtilisateur, String motDePasse) {
     _utilisateursFuture.then((listeUtilisateurs) {
       for (var utilisateur in listeUtilisateurs) {
+        UtilisateurConnecte.utilisateur = utilisateur;
         if ((utilisateur.nom == nomUtilisateur || utilisateur.mail == nomUtilisateur) && utilisateur.motDePasse == motDePasse) {
           Navigator.push(
             context,

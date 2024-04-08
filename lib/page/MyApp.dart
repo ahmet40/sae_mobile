@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:sae_mobile/page/ChoisirCategorie.dart';
-import 'package:sae_mobile/page/choisirAnnonce.dart';
+import 'package:sae/page/ChoisirCategorie.dart';
+import 'package:sae/page/choisirAnnonce.dart';
 import 'PageProduit.dart';
 import 'Accueil.dart';
 
@@ -10,7 +10,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Nombre mystere',
+      title: 'Allo 45',
       theme: ThemeData.dark(),
       home: const MyHomePage(),
     );

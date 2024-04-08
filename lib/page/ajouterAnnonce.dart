@@ -1,8 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:sae_mobile/modele/modele_local/bd/AnnonceBD.dart';
-import 'package:sae_mobile/modele/modele_local/bd/CategorieBD.dart';
-import 'package:sae_mobile/modele/modele_local/file/Categorie.dart';
+import 'package:sae/modele/modele_local/bd/AnnonceBD.dart';
+import 'package:sae/modele/modele_local/bd/CategorieBD.dart';
+import 'package:sae/modele/User/UtilisateurConnexion.dart';
+import '../modele/modele_local/bd/CreerBD.dart';
 
 class AjouterAnnonce extends StatefulWidget {
   @override
@@ -110,31 +111,30 @@ class _AjouterAnnonceState extends State<AjouterAnnonce> {
       setState(() {
         if (isStartDate) {
           _selectedDateDebut = picked;
-          dateDebutController.text = picked.toString();
+          dateDebutController.text = _selectedDateDebut!.toIso8601String();
         } else {
           _selectedDateFin = picked;
-          dateFinController.text = picked.toString();
+          dateFinController.text = _selectedDateFin!.toIso8601String();
         }
       });
     }
   }
 
+
+
   void _createAnnonce() {
     String titre = titreController.text;
     String description = descriptionController.text;
     String? categorie = _selectedCategorie; // Catégorie sélectionnée
-    String dateDebut = _selectedDateDebut != null ? _selectedDateDebut.toString() : '';
-    String dateFin = _selectedDateFin != null ? _selectedDateFin.toString() : '';
+    DateTime? dateDebut = _selectedDateDebut;
+    DateTime? dateFin = _selectedDateFin;
 
-    if (titre.isNotEmpty && description.isNotEmpty && categorie != null && dateDebut.isNotEmpty && dateFin.isNotEmpty) {
-      // on met la date de début et de fin au bon format string pour la base de données
-      dateDebut = dateDebut.split(' ')[0];
-      dateFin = dateFin.split(' ')[0];
-      // on affiche le type de dateDebut et dateFin
-      print('dateDebut: $dateDebut');
-      print('dateFin: $dateFin');
-      print('type de dateDebut: ${dateDebut.runtimeType}');
-      print('type de dateFin: ${dateFin.runtimeType}');
+    if (titre.isNotEmpty &&
+        description.isNotEmpty &&
+        categorie != null &&
+        dateDebut != null &&
+        dateFin != null) {
+
       // Créer l'annonce
       AnnonceBD().creationAnnonce(
         titre,
@@ -142,9 +142,33 @@ class _AjouterAnnonceState extends State<AjouterAnnonce> {
         categorie,
         dateDebut,
         dateFin,
-      ).then((value) {
-        // Annonce ajoutée avec succès, retourner à la page précédente
-        Navigator.pop(context);
+      ).then((annonceId) {
+        // Annonce ajoutée avec succès, insérer la relation dans la table Creer
+        int utilisateurId = UtilisateurConnecte.utilisateur!.getId;
+        CreerBD().creationCreer(utilisateurId, annonceId).then((_) {
+          // Relation Creer insérée avec succès, retourner à la page précédente
+          Navigator.pop(context);
+        }).catchError((error) {
+          // Gestion des erreurs lors de l'insertion de la relation Creer
+          print('Erreur lors de l\'insertion de la relation Creer: $error');
+          // Afficher une boîte de dialogue d'erreur ou un message d'erreur
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: Text('Erreur'),
+              content: Text(
+                  'Une erreur est survenue lors de l\'insertion de la relation Creer.'),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: Text('OK'),
+                ),
+              ],
+            ),
+          );
+        });
       }).catchError((error) {
         // Gestion des erreurs lors de la création de l'annonce
         print('Erreur lors de la création de l\'annonce: $error');
@@ -153,7 +177,8 @@ class _AjouterAnnonceState extends State<AjouterAnnonce> {
           context: context,
           builder: (context) => AlertDialog(
             title: Text('Erreur'),
-            content: Text('Une erreur est survenue lors de la création de l\'annonce.'),
+            content: Text(
+                'Une erreur est survenue lors de la création de l\'annonce.'),
             actions: <Widget>[
               TextButton(
                 onPressed: () {
@@ -185,4 +210,6 @@ class _AjouterAnnonceState extends State<AjouterAnnonce> {
       );
     }
   }
+
+
 }

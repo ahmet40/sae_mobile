@@ -1,4 +1,4 @@
-import 'package:sae_mobile/modele/modele_local/file/Categorie.dart';
+import 'package:sae/modele/modele_local/file/Categorie.dart';
 
 import 'database.dart';
 
